@@ -170,7 +170,7 @@ async function createGame(
   document.getElementById('quick-game-btn').setAttribute('onclick', '')
 }
 
-async function joinGame(gameID) {
+async function cancelGame(gameID) {
   let options = {
     contractAddress: gameContractAddy,
     functionName: 'cancelGame',
@@ -436,6 +436,8 @@ async function getGames() {
                   '{{JoinGameEligibility}}',
                   myEntries >= gameDetail.maxEntriesPerWallet
                     ? 'No Entries Remain'
+                    : tokenAllowance == '0'
+                    ? 'UNIVRS Approve Required'
                     : tokenBalance.toNumber() <
                       gameDetail.entryUnivrs.toNumber()
                     ? 'Not Enough UNIVRS'
@@ -445,7 +447,9 @@ async function getGames() {
                 .replace(
                   '{{JoinGameDisabled}}',
                   myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance.toNumber() < gameDetail.entryUnivrs.toNumber()
+                    tokenBalance.toNumber() <
+                      gameDetail.entryUnivrs.toNumber() ||
+                    tokenAllowance == '0'
                     ? 'disabled'
                     : ''
                 )
@@ -453,7 +457,9 @@ async function getGames() {
                 .replace(
                   '{{JoinGameBtnState}}',
                   myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance.toNumber() < gameDetail.entryUnivrs.toNumber()
+                    tokenBalance.toNumber() <
+                      gameDetail.entryUnivrs.toNumber() ||
+                    tokenAllowance == '0'
                     ? 'secondary'
                     : 'info'
                 )
