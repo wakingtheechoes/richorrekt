@@ -408,8 +408,14 @@ async function login() {
 
       balanceCheck().then((value) => {
         console.log('Balance' + value.toString())
-        document.getElementById('mints-remaining').innerHTML =
-          'You have ' + value.toString() + ' UNIVRS in your wallet.'
+        document.getElementById('token-balance').innerText =
+          value.toString() + ' UNIVRS'
+      })
+
+      allowanceCheck().then((allowance) => {
+        if (allowance == 0) {
+          document.getElementById('approve-token-btn').style.display = 'block'
+        }
       })
 
       getGames()
@@ -464,6 +470,12 @@ if (wallet_previously_connected === 'true') {
         console.log('Balance' + value.toString())
         document.getElementById('token-balance').innerText =
           value.toString() + ' UNIVRS'
+      })
+
+      allowanceCheck().then((allowance) => {
+        if (allowance == 0) {
+          document.getElementById('approve-token-btn').style.display = 'block'
+        }
       })
 
       getGames()
