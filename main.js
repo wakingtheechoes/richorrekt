@@ -30,7 +30,7 @@ async function balanceCheck() {
   }
 
   const balance = await Moralis.executeFunction(options)
-  tokenBalance = balance.toString()
+  tokenBalance = balance
   return balance
 }
 
@@ -400,6 +400,10 @@ async function getGames() {
               </tr>`
               }
 
+              console.log(tokenBalance)
+              console.log(gameDetail.entryUnivrs)
+              console.log(tokenBalance > gameDetail.entryUnivrs)
+
               html = html
                 .replaceAll('{{GameID}}', i + 1)
                 .replace(
@@ -430,18 +434,28 @@ async function getGames() {
                 .replace('{{NeededForMin}}', gameDetail.minEntrants.toString())
                 .replace(
                   '{{JoinGameEligibility}}',
-                  myEntries < gameDetail.maxEntriesPerWallet
-                    ? 'Join Game'
-                    : 'No Entries Remain'
+                  myEntries >= gameDetail.maxEntriesPerWallet
+                    ? 'No Entries Remain'
+                    : tokenBalance.toNumber() <
+                      gameDetail.entryUnivrs.toNumber()
+                    ? 'Not Enough UNIVRS'
+                    : 'Join Game'
                 )
+                .replace('Join Game')
                 .replace(
                   '{{JoinGameDisabled}}',
-                  myEntries < gameDetail.maxEntriesPerWallet ? '' : 'disabled'
+                  myEntries >= gameDetail.maxEntriesPerWallet ||
+                    tokenBalance.toNumber() < gameDetail.entryUnivrs.toNumber()
+                    ? 'disabled'
+                    : ''
                 )
                 .replace('{{MyEntries}}', myEntries)
                 .replace(
                   '{{JoinGameBtnState}}',
-                  myEntries < gameDetail.maxEntriesPerWallet ? 'info' : 'danger'
+                  myEntries >= gameDetail.maxEntriesPerWallet ||
+                    tokenBalance.toNumber() < gameDetail.entryUnivrs.toNumber()
+                    ? 'secondary'
+                    : 'info'
                 )
                 .replace(
                   '{{RunButtonVisibility}}',
