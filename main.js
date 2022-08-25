@@ -2,7 +2,7 @@
 const serverUrl = 'https://fnq9ueg5rh3t.usemoralis.com:2053/server'
 const appId = 'jC9FbUAN6ggfoSXiWQAI8lXZ1utDYCZospdfx8Cw'
 const tokenContractAddy = '0x3f8855410EF6F7Ab7Da6680e04afa7DF95D49C94'
-const gameContractAddy = '0x0Db940005CD160871cFbEf8964BdadDD2DD04fDd'
+const gameContractAddy = '0x4EF1230d8a1218661457549658aE2D59b322EcEC'
 Moralis.start({ serverUrl, appId })
 
 var tokenBalance = 0
@@ -363,7 +363,17 @@ async function getGames() {
                     : 'display:none;'
                 )
                 .replace('{{Prize}}', gameDetail.prize.toString())
-                .replace('{{Winner}}', gameDetail.winner.toString())
+                .replace(
+                  '{{Winner}}',
+                  gameDetail.winner.toString() ==
+                    '0x0000000000000000000000000000000000000000'
+                    ? 'CANCELLED'
+                    : gameDetail.winner.toString().substring(1, 8) +
+                        '...' +
+                        gameDetail.creator
+                          .toString()
+                          .substring(35, gameDetail.winner.toString().length)
+                )
               if (gameDetail.completed == true) {
                 document.getElementById(
                   'completed-games-table-body'
