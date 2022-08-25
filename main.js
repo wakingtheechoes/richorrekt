@@ -115,6 +115,93 @@ async function joinGame(gameID) {
   document.getElementById('join-game-' + gameID).setAttribute('onclick', '')
 }
 
+async function createGame(
+  tokenEntry,
+  minEntries,
+  maxEntries,
+  entriesPerWallet
+) {
+  let options = {
+    contractAddress: gameContractAddy,
+    functionName: 'createGame',
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_entryUnivrs',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: '_minEntrants',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: '_maxEntrants',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint16',
+            name: '_maxEntriesPerWallet',
+            type: 'uint16',
+          },
+        ],
+        name: 'createGame',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+    params: {
+      _entryUnivrs: tokenEntry,
+      _minEntrants: minEntries,
+      _maxEntrants: maxEntries,
+      _maxEntriesPerWallet: entriesPerWallet,
+    },
+  }
+
+  let tx = await Moralis.executeFunction(options)
+  document.getElementById('quick-game-btn').innerHTML =
+    "<a href='https://mumbai.polygonscan.com/tx/" +
+    tx.hash +
+    "' target='_blank'>Your Game is Being Created.</a> Refresh the page once the tx is complete."
+  document.getElementById('quick-game-btn').setAttribute('onclick', '')
+}
+
+async function joinGame(gameID) {
+  let options = {
+    contractAddress: gameContractAddy,
+    functionName: 'cancelGame',
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'gameID',
+            type: 'uint256',
+          },
+        ],
+        name: 'cancelGame',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+    params: {
+      gameID: gameID,
+    },
+  }
+
+  let tx = await Moralis.executeFunction(options)
+  document.getElementById('cancel-game-' + gameID).innerHTML =
+    "<a href='https://mumbai.polygonscan.com/tx/" +
+    tx.hash +
+    "' target='_blank'>Cancel Tx</a>"
+  document.getElementById('cancel-game-' + gameID).setAttribute('onclick', '')
+}
+
 async function runGame(gameID) {
   let options = {
     contractAddress: gameContractAddy,
@@ -307,6 +394,8 @@ async function getGames() {
                   <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
                     {{JoinGameEligibility}}
                   </button>
+                  <br/>
+                  <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
                 </td>
               </tr>`
               }
@@ -359,6 +448,15 @@ async function getGames() {
                   gameDetail.creator.toLowerCase() ==
                     user.get('ethAddress').toLowerCase() &&
                     gameEntries.length >= gameDetail.minEntrants
+                    ? ''
+                    : 'display:none;'
+                )
+                .replace(
+                  '{{CancelButtonVisibility}}',
+                  gameDetail.creator.toLowerCase() ==
+                    user.get('ethAddress').toLowerCase() &&
+                    gameDetail.requestedRandom == false &&
+                    gameDetail.completed == false
                     ? ''
                     : 'display:none;'
                 )
@@ -425,6 +523,8 @@ async function login() {
       allowanceCheck().then((allowance) => {
         if (allowance == 0) {
           document.getElementById('approve-token-btn').style.display = 'block'
+        } else {
+          document.getElementById('quick-game-btn').style.display = 'block'
         }
       })
 
@@ -485,6 +585,8 @@ if (wallet_previously_connected === 'true') {
       allowanceCheck().then((allowance) => {
         if (allowance == 0) {
           document.getElementById('approve-token-btn').style.display = 'block'
+        } else {
+          document.getElementById('quick-game-btn').style.display = 'block'
         }
       })
 
