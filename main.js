@@ -337,6 +337,18 @@ async function getGames() {
     document.getElementById('open-games-table-body').innerHTML = ''
     document.getElementById('completed-games-table-body').innerHTML = ''
     let pastGames = 0
+    let activeGamesHTML = ''
+    let pastGamesHTML = ''
+
+    /// suppppper hacky ordering. Again, this would be way better in vue or react
+    let pastGamesToTen = 0
+    for (let i = value.length - 1; i >= 0; i--) {
+      if (value[i] < 1 && pastGames < 10) {
+        pastGamesHTML += '{{{' + i + '}}}'
+      } else if (value[i] > 0) {
+        activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
+      }
+    }
     for (let i = value.length - 1; i >= 0; i--) {
       if (value[i].toString() != '0' || pastGames < 10) {
         let localGameDetailOptions = JSON.parse(
@@ -517,15 +529,26 @@ async function getGames() {
                           .substring(35, gameDetail.winner.toString().length)
                 )
               if (gameDetail.completed == true) {
+                pastGamesHTML = pastGamesHTML.replace(
+                  '{{{' + i.toString() + '}}}',
+                  html
+                )
                 document.getElementById(
                   'completed-games-table-body'
-                ).innerHTML += html
+                ).innerHTML = pastGamesHTML
               } else {
-                document.getElementById('open-games-table-body').innerHTML +=
+                activeGamesHTML = activeGamesHTML.replace(
+                  '{{{' + i.toString() + '}}}',
                   html
+                )
+                document.getElementById('open-games-table-body').innerHTML =
+                  activeGamesHTML
               }
             }
           )
+          document.getElementById('open-games-placeholder').style.display =
+            'none'
+          document.getElementById('open-games-data').style.display = 'block'
         })
       }
     }
@@ -568,7 +591,7 @@ async function login() {
         if (allowance == 0) {
           document.getElementById('approve-token-btn').style.display = 'block'
         } else {
-          document.getElementById('quick-game-btn').style.display = 'block'
+          document.getElementById('approved-actions').style.display = 'block'
         }
       })
 
@@ -631,7 +654,7 @@ if (wallet_previously_connected === 'true') {
         if (allowance == 0) {
           document.getElementById('approve-token-btn').style.display = 'block'
         } else {
-          document.getElementById('quick-game-btn').style.display = 'block'
+          document.getElementById('approved-actions').style.display = 'block'
         }
       })
 
