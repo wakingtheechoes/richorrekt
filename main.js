@@ -168,6 +168,26 @@ async function createGame(
     tx.hash +
     "' target='_blank'>Your Game is Being Created.</a> Refresh the page once the tx is complete."
   document.getElementById('quick-game-btn').setAttribute('onclick', '')
+  return tx
+}
+
+async function createCustomGame(
+  tokenEntry,
+  minEntries,
+  maxEntries,
+  entriesPerWallet
+) {
+  let tx = await createGame(
+    document.getElementById('entry-input').value,
+    document.getElementById('min-input').value,
+    document.getElementById('max-input').value,
+    document.getElementById('entries-wallet-input').value
+  )
+  document.getElementById('create-custom-btn').innerHTML =
+    "<a href='https://mumbai.polygonscan.com/tx/" +
+    tx.hash +
+    "' target='_blank'>Your Game is Being Created.</a> Refresh the page once the tx is complete to see it in the game list."
+  document.getElementById('create-custom-btn').setAttribute('onclick', '')
 }
 
 async function cancelGame(gameID) {
@@ -388,13 +408,17 @@ async function getGames() {
                 </td>
                 <td class="align-middle text-center text-sm text-dark">
                   <span class="badge badge-md badge-{{ReadyToRunState}}">{{ReadyToRun}} ({{NeededForMin}})</span>
-                  <button style="{{RunButtonVisibility}}" id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn btn-sm bg-gradient-info btn-round text-light my-auto font-weight-bold text-xs">Run</button>
+                  
                 </td>
                 <td class="align-middle">
                   <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
                     {{JoinGameEligibility}}
                   </button>
                   <br/>
+                  <div style="{{RunButtonVisibility}}" >
+                  <button id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn btn-sm bg-gradient-success btn-round text-dark my-auto font-weight-bold mt-2 text-xs">Run Game</button>
+                  <br/>
+                  </div>
                   <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
                 </td>
               </tr>`
@@ -573,6 +597,7 @@ document.getElementById('btn-connect').onclick = login
 document.getElementById('btn-connect-mobile').onclick = login
 document.getElementById('btn-logout').onclick = logOut
 document.getElementById('btn-logout-mobile').onclick = logOut
+document.getElementById('create-custom-btn').onclick = createCustomGame
 /*
 document.getElementById('btn-approve').onclick = approveUNIVRS
 */
