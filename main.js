@@ -423,15 +423,15 @@ async function getGames() {
                   
                 </td>
                 <td class="align-middle">
-                  <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
+                  <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
                     {{JoinGameEligibility}}
                   </button>
                   <br/>
                   <div style="{{RunButtonVisibility}}" >
-                  <button id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn btn-sm bg-gradient-success btn-round text-dark my-auto font-weight-bold mt-2 text-xs">Run Game</button>
+                  <button id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-success btn-round text-dark my-auto font-weight-bold mt-2 text-xs">Run Game</button>
                   <br/>
                   </div>
-                  <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
+                  <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
                 </td>
               </tr>`
               }
