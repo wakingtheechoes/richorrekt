@@ -1,8 +1,13 @@
 /* Moralis init code */
-const serverUrl = 'https://fnq9ueg5rh3t.usemoralis.com:2053/server'
-const appId = 'jC9FbUAN6ggfoSXiWQAI8lXZ1utDYCZospdfx8Cw'
-const tokenContractAddy = '0x3f8855410EF6F7Ab7Da6680e04afa7DF95D49C94'
-const gameContractAddy = '0x4EF1230d8a1218661457549658aE2D59b322EcEC'
+// const serverUrl = 'https://fnq9ueg5rh3t.usemoralis.com:2053/server' // old serverUrl
+// const appId = 'jC9FbUAN6ggfoSXiWQAI8lXZ1utDYCZospdfx8Cw' // old app ID
+// const tokenContractAddy = '0x3f8855410EF6F7Ab7Da6680e04afa7DF95D49C94' // mumbai univrs
+// const gameContractAddy = '0x53799CF9dfa72C02A644ba4d6E874AFF3F603482' // mumbail game
+const serverUrl = 'https://ytw9hgvdwbop.usemoralis.com:2053/server'
+const appId = 'bIsFe0a9AxWQH1mCxUJtRu00RyO5MMRjWLSoONnY'
+const gameContractAddy = '0x3EcB3c08a30E924B92bc0288Aa7a59cF10B9aaDF'
+const tokenContractAddy = '0x337617f19b496cba235f3611e0a69aa94de6c400'
+
 Moralis.start({ serverUrl, appId })
 
 var tokenBalance = 0
@@ -147,6 +152,11 @@ async function createGame(
             name: '_maxEntriesPerWallet',
             type: 'uint16',
           },
+          {
+            internalType: 'address[]',
+            name: '_gameAllowList',
+            type: 'address[]',
+          },
         ],
         name: 'createGame',
         outputs: [],
@@ -159,6 +169,7 @@ async function createGame(
       _minEntrants: minEntries,
       _maxEntrants: maxEntries,
       _maxEntriesPerWallet: entriesPerWallet,
+      _gameAllowList: [],
     },
   }
 
@@ -287,6 +298,7 @@ async function getGames() {
         name: 'gamesMapping',
         outputs: [
           { internalType: 'address', name: 'creator', type: 'address' },
+          { internalType: 'bool', name: 'isPublic', type: 'bool' },
           {
             internalType: 'uint16',
             name: 'maxEntriesPerWallet',
@@ -299,11 +311,13 @@ async function getGames() {
           { internalType: 'uint256', name: 'prize', type: 'uint256' },
           { internalType: 'bool', name: 'requestedRandom', type: 'bool' },
           { internalType: 'bool', name: 'completed', type: 'bool' },
+          { internalType: 'uint256', name: 'randomRequestID', type: 'uint256' },
           {
             internalType: 'uint256',
             name: 'randomWordReturned',
             type: 'uint256',
           },
+          { internalType: 'string', name: 'gameAlias', type: 'string' },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -331,6 +345,29 @@ async function getGames() {
     },
   }
 
+  // game allow list array ABI
+  /*
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "gameID",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getGameAllowlist",
+              "outputs": [
+                {
+                  "internalType": "address[]",
+                  "name": "",
+                  "type": "address[]"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+  */
+
   const nextGameID = await Moralis.executeFunction(options)
   Moralis.executeFunction(openGamesOptions).then((value) => {
     console.log(value)
@@ -349,6 +386,7 @@ async function getGames() {
         activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
       }
     }
+
     for (let i = value.length - 1; i >= 0; i--) {
       if (value[i].toString() != '0' || pastGames < 10) {
         let localGameDetailOptions = JSON.parse(
