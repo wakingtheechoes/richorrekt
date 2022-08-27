@@ -512,8 +512,7 @@ async function getGames() {
                     ? 'No Entries Remain'
                     : tokenAllowance == '0'
                     ? 'UNIVRS Approve Required'
-                    : tokenBalance.toNumber() <
-                      gameDetail.entryUnivrs.toNumber()
+                    : tokenBalance < gameDetail.entryUnivrs
                     ? 'Not Enough UNIVRS'
                     : 'Join Game'
                 )
@@ -521,8 +520,7 @@ async function getGames() {
                 .replace(
                   '{{JoinGameDisabled}}',
                   myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance.toNumber() <
-                      gameDetail.entryUnivrs.toNumber() ||
+                    tokenBalance < gameDetail.entryUnivrs ||
                     tokenAllowance == '0'
                     ? 'disabled'
                     : ''
@@ -531,8 +529,7 @@ async function getGames() {
                 .replace(
                   '{{JoinGameBtnState}}',
                   myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance.toNumber() <
-                      gameDetail.entryUnivrs.toNumber() ||
+                    tokenBalance < gameDetail.entryUnivrs ||
                     tokenAllowance == '0'
                     ? 'secondary'
                     : 'info'
