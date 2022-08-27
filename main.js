@@ -114,7 +114,7 @@ async function joinGame(gameID) {
 
   let tx = await Moralis.executeFunction(options)
   document.getElementById('join-game-' + gameID).innerHTML =
-    "<a href='https://mumbai.polygonscan.com/tx/" +
+    "<a href='https://polygonscan.com/tx/" +
     tx.hash +
     "' target='_blank'>Join Tx</a>"
   document.getElementById('join-game-' + gameID).setAttribute('onclick', '')
@@ -175,7 +175,7 @@ async function createGame(
 
   let tx = await Moralis.executeFunction(options)
   document.getElementById('quick-game-btn').innerHTML =
-    "<a href='https://mumbai.polygonscan.com/tx/" +
+    "<a href='https://polygonscan.com/tx/" +
     tx.hash +
     "' target='_blank'>Your Game is Being Created.</a> Refresh the page once the tx is complete."
   document.getElementById('quick-game-btn').setAttribute('onclick', '')
@@ -195,7 +195,7 @@ async function createCustomGame(
     document.getElementById('entries-wallet-input').value
   )
   document.getElementById('create-custom-btn').innerHTML =
-    "<a href='https://mumbai.polygonscan.com/tx/" +
+    "<a href='https://polygonscan.com/tx/" +
     tx.hash +
     "' target='_blank'>Your Game is Being Created.</a> Refresh the page once the tx is complete to see it in the game list."
   document.getElementById('create-custom-btn').setAttribute('onclick', '')
@@ -227,7 +227,7 @@ async function cancelGame(gameID) {
 
   let tx = await Moralis.executeFunction(options)
   document.getElementById('cancel-game-' + gameID).innerHTML =
-    "<a href='https://mumbai.polygonscan.com/tx/" +
+    "<a href='https://polygonscan.com/tx/" +
     tx.hash +
     "' target='_blank'>Cancel Tx</a>"
   document.getElementById('cancel-game-' + gameID).setAttribute('onclick', '')
@@ -253,7 +253,7 @@ async function runGame(gameID) {
 
   let tx = await Moralis.executeFunction(options)
   document.getElementById('run-game-' + gameID).innerHTML =
-    "<a href='https://mumbai.polygonscan.com/tx/" +
+    "<a href='https://polygonscan.com/tx/" +
     tx.hash +
     "' target='_blank'>Run Tx</a>"
   document.getElementById('run-game-' + gameID).setAttribute('onclick', '')
