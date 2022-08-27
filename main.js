@@ -16,7 +16,7 @@ var tokenAllowance = 0
 /* Check that we can read from the contract */
 async function balanceCheck() {
   let user = Moralis.User.current()
-  console.log(user.get('ethAddress'))
+  // console.log(user.get('ethAddress'))
   let options = {
     contractAddress: tokenContractAddy,
     functionName: 'balanceOf',
@@ -370,7 +370,7 @@ async function getGames() {
 
   const nextGameID = await Moralis.executeFunction(options)
   Moralis.executeFunction(openGamesOptions).then((value) => {
-    console.log(value)
+    // console.log(value)
     document.getElementById('open-games-table-body').innerHTML = ''
     document.getElementById('completed-games-table-body').innerHTML = ''
     let pastGames = 0
@@ -378,12 +378,15 @@ async function getGames() {
     let pastGamesHTML = ''
 
     /// suppppper hacky ordering. Again, this would be way better in vue or react
-    let pastGamesToTen = 0
+    let activeGamesCount = 0
+    let pastGamesCount = 0
     for (let i = value.length - 1; i >= 0; i--) {
       if (value[i] < 1 && pastGames < 10) {
         pastGamesHTML += '{{{' + i + '}}}'
+        pastGamesCount++
       } else if (value[i] > 0) {
         activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
+        activeGamesCount++
       }
     }
 
@@ -398,193 +401,225 @@ async function getGames() {
         )
         localGameEntriesOptions.params['gameID'] = i + 1
 
-        Moralis.executeFunction(localGameDetailOptions).then((gameDetail) => {
-          console.log(gameDetail)
-          Moralis.executeFunction(localGameEntriesOptions).then(
-            (gameEntries) => {
-              console.log(gameEntries)
-              let currentEntriesCount = gameEntries.length
-              let myEntries = 0
-              for (let j = 0; j < currentEntriesCount; j++) {
-                // console.log(gameEntries[j].toString())
-                // console.log(user.get('ethAddress').toString())
-                if (
-                  gameEntries[j].toLowerCase() ==
-                  user.get('ethAddress').toLowerCase()
-                ) {
-                  myEntries++
+        try {
+          Moralis.executeFunction(localGameDetailOptions).then((gameDetail) => {
+            // console.log(gameDetail)
+            Moralis.executeFunction(localGameEntriesOptions).then(
+              (gameEntries) => {
+                // console.log(gameEntries)
+                let currentEntriesCount = gameEntries.length
+                let myEntries = 0
+                for (let j = 0; j < currentEntriesCount; j++) {
+                  // console.log(gameEntries[j].toString())
+                  // console.log(user.get('ethAddress').toString())
+                  if (
+                    gameEntries[j].toLowerCase() ==
+                    user.get('ethAddress').toLowerCase()
+                  ) {
+                    myEntries++
+                  }
+                }
+                // console.log(myEntries)
+                let html = ''
+                if (value[i].toString() == '0') {
+                  html = `<tr>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="mb-0 text-sm">ID: {{GameID}}</h6>
+                        <p class="text-sm text-secondary mb-0">Host: {{Creator}}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <p class="text-sm font-weight-bold text-dark mb-0">{{CurrentEntries}}</p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-dark mb-0 text-center">{{Prize}}</p>
+                  </td>
+                  <td class="align-middle text-center">
+                    <span class="text-secondary text-sm font-weight-bold text-dark">{{Winner}}</span>
+                  </td>
+                </tr>`
+                } else {
+                  html = `<tr>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="mb-0 text-sm">ID: {{GameID}}</h6>
+                        <p class="text-sm text-secondary mb-0">Host: {{Creator}}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <p class="text-sm font-weight-bold text-dark mb-0">{{EntryFee}} UNIVRS</p>
+                  </td>
+                  <td>
+                    <p class="text-sm text-dark mb-0 text-center">{{CurrentEntries}} / {{EntriesRemain}}</p>
+                  </td>
+                  <td class="align-middle text-center">
+                    <span class="text-secondary text-sm font-weight-bold text-dark">{{EntriesPerWallet}} ({{MyEntries}})</span>
+                  </td>
+                  <td class="align-middle text-center text-sm text-dark">
+                    <span class="badge badge-md badge-{{ReadyToRunState}}">{{ReadyToRun}} ({{NeededForMin}})</span>
+                    
+                  </td>
+                  <td class="align-middle">
+                    <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
+                      {{JoinGameEligibility}}
+                    </button>
+                    <br/>
+                    <div style="{{RunButtonVisibility}}" >
+                    <button id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-success btn-round text-dark my-auto font-weight-bold mt-2 text-xs">Run Game</button>
+                    <br/>
+                    </div>
+                    <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
+                  </td>
+                </tr>`
+                }
+
+                // console.log(tokenBalance)
+                // console.log(gameDetail.entryUnivrs)
+                // console.log(tokenBalance > gameDetail.entryUnivrs)
+
+                html = html
+                  .replaceAll('{{GameID}}', i + 1)
+                  .replace(
+                    '{{Creator}}',
+                    gameDetail.creator.toString().substring(1, 8) +
+                      '...' +
+                      gameDetail.creator
+                        .toString()
+                        .substring(35, gameDetail.creator.toString().length)
+                  )
+                  .replace('{{EntryFee}}', gameDetail.entryUnivrs.toString())
+                  .replace(
+                    '{{EntriesRemain}}',
+                    gameDetail.maxEntrants.toString()
+                  )
+                  .replace('{{CurrentEntries}}', gameEntries.length)
+                  .replace(
+                    '{{EntriesPerWallet}}',
+                    gameDetail.maxEntriesPerWallet.toString()
+                  )
+                  .replace(
+                    '{{ReadyToRun}}',
+                    gameEntries.length >= gameDetail.minEntrants ? 'Yes' : 'No'
+                  )
+                  .replace(
+                    '{{ReadyToRunState}}',
+                    gameEntries.length >= gameDetail.minEntrants
+                      ? 'success'
+                      : 'danger'
+                  )
+                  .replace(
+                    '{{NeededForMin}}',
+                    gameDetail.minEntrants.toString()
+                  )
+                  .replace(
+                    '{{JoinGameEligibility}}',
+                    myEntries >= gameDetail.maxEntriesPerWallet
+                      ? 'No Entries Remain'
+                      : tokenAllowance == '0'
+                      ? 'UNIVRS Approve Required'
+                      : tokenBalance < gameDetail.entryUnivrs
+                      ? 'Not Enough UNIVRS'
+                      : 'Join Game'
+                  )
+                  .replace('Join Game')
+                  .replace(
+                    '{{JoinGameDisabled}}',
+                    myEntries >= gameDetail.maxEntriesPerWallet ||
+                      tokenBalance < gameDetail.entryUnivrs ||
+                      tokenAllowance == '0'
+                      ? 'disabled'
+                      : ''
+                  )
+                  .replace('{{MyEntries}}', myEntries)
+                  .replace(
+                    '{{JoinGameBtnState}}',
+                    myEntries >= gameDetail.maxEntriesPerWallet ||
+                      tokenBalance < gameDetail.entryUnivrs ||
+                      tokenAllowance == '0'
+                      ? 'secondary'
+                      : 'info'
+                  )
+                  .replace(
+                    '{{RunButtonVisibility}}',
+                    gameDetail.creator.toLowerCase() ==
+                      user.get('ethAddress').toLowerCase() &&
+                      gameEntries.length >= gameDetail.minEntrants
+                      ? ''
+                      : 'display:none;'
+                  )
+                  .replace(
+                    '{{CancelButtonVisibility}}',
+                    gameDetail.creator.toLowerCase() ==
+                      user.get('ethAddress').toLowerCase() &&
+                      gameDetail.requestedRandom == false &&
+                      gameDetail.completed == false
+                      ? ''
+                      : 'display:none;'
+                  )
+                  .replace('{{Prize}}', gameDetail.prize.toString())
+                  .replace(
+                    '{{Winner}}',
+                    gameDetail.winner.toString() ==
+                      '0x0000000000000000000000000000000000000000'
+                      ? 'CANCELLED'
+                      : gameDetail.winner.toString().substring(1, 8) +
+                          '...' +
+                          gameDetail.creator
+                            .toString()
+                            .substring(35, gameDetail.winner.toString().length)
+                  )
+                if (gameDetail.completed == true) {
+                  // console.log(pastGamesCount)
+                  pastGamesHTML = pastGamesHTML.replace(
+                    '{{{' + i.toString() + '}}}',
+                    html
+                  )
+                  if (--pastGamesCount == 0) {
+                    document.getElementById(
+                      'completed-games-table-body'
+                    ).innerHTML = pastGamesHTML
+                  }
+                } else {
+                  // console.log(activeGamesCount)
+                  activeGamesHTML = activeGamesHTML.replace(
+                    '{{{' + i.toString() + '}}}',
+                    html
+                  )
+                  if (--activeGamesCount == 0) {
+                    document.getElementById('open-games-table-body').innerHTML =
+                      activeGamesHTML
+
+                    document.getElementById(
+                      'open-games-placeholder'
+                    ).style.display = 'none'
+                    document.getElementById('open-games-data').style.display =
+                      'block'
+                  }
                 }
               }
-              console.log(myEntries)
-              let html = ''
-              if (value[i].toString() == '0') {
-                html = `<tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">ID: {{GameID}}</h6>
-                      <p class="text-sm text-secondary mb-0">Host: {{Creator}}</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <p class="text-sm font-weight-bold text-dark mb-0">{{CurrentEntries}}</p>
-                </td>
-                <td>
-                  <p class="text-sm text-dark mb-0 text-center">{{Prize}}</p>
-                </td>
-                <td class="align-middle text-center">
-                  <span class="text-secondary text-sm font-weight-bold text-dark">{{Winner}}</span>
-                </td>
-              </tr>`
-              } else {
-                html = `<tr>
-                <td>
-                  <div class="d-flex px-2 py-1">
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-0 text-sm">ID: {{GameID}}</h6>
-                      <p class="text-sm text-secondary mb-0">Host: {{Creator}}</p>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <p class="text-sm font-weight-bold text-dark mb-0">{{EntryFee}} UNIVRS</p>
-                </td>
-                <td>
-                  <p class="text-sm text-dark mb-0 text-center">{{CurrentEntries}} / {{EntriesRemain}}</p>
-                </td>
-                <td class="align-middle text-center">
-                  <span class="text-secondary text-sm font-weight-bold text-dark">{{EntriesPerWallet}} ({{MyEntries}})</span>
-                </td>
-                <td class="align-middle text-center text-sm text-dark">
-                  <span class="badge badge-md badge-{{ReadyToRunState}}">{{ReadyToRun}} ({{NeededForMin}})</span>
-                  
-                </td>
-                <td class="align-middle">
-                  <button id="join-game-{{GameID}}" {{JoinGameDisabled}} onclick="joinGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-{{JoinGameBtnState}} btn-round text-light my-auto font-weight-bold text-xs join-game" data-gameid={{GameID}} data-toggle="tooltip" data-original-title="Join Game">
-                    {{JoinGameEligibility}}
-                  </button>
-                  <br/>
-                  <div style="{{RunButtonVisibility}}" >
-                  <button id="run-game-{{GameID}}" onclick="runGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-success btn-round text-dark my-auto font-weight-bold mt-2 text-xs">Run Game</button>
-                  <br/>
-                  </div>
-                  <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
-                </td>
-              </tr>`
-              }
+            )
+          })
+        } catch (error) {
+          if (value[i] < 1 && pastGames < 10) {
+            pastGamesHTML = pastGamesHTML.replace('{{{' + i + '}}}', '')
+            pastGamesCount--
+          } else if (value[i] > 0) {
+            activeGamesHTML = activeGamesHTML.replace('{{{' + i + '}}}', '')
+            if (--activeGamesCount == 0) {
+              document.getElementById('open-games-table-body').innerHTML =
+                activeGamesHTML
 
-              console.log(tokenBalance)
-              console.log(gameDetail.entryUnivrs)
-              console.log(tokenBalance > gameDetail.entryUnivrs)
-
-              html = html
-                .replaceAll('{{GameID}}', i + 1)
-                .replace(
-                  '{{Creator}}',
-                  gameDetail.creator.toString().substring(1, 8) +
-                    '...' +
-                    gameDetail.creator
-                      .toString()
-                      .substring(35, gameDetail.creator.toString().length)
-                )
-                .replace('{{EntryFee}}', gameDetail.entryUnivrs.toString())
-                .replace('{{EntriesRemain}}', gameDetail.maxEntrants.toString())
-                .replace('{{CurrentEntries}}', gameEntries.length)
-                .replace(
-                  '{{EntriesPerWallet}}',
-                  gameDetail.maxEntriesPerWallet.toString()
-                )
-                .replace(
-                  '{{ReadyToRun}}',
-                  gameEntries.length >= gameDetail.minEntrants ? 'Yes' : 'No'
-                )
-                .replace(
-                  '{{ReadyToRunState}}',
-                  gameEntries.length >= gameDetail.minEntrants
-                    ? 'success'
-                    : 'danger'
-                )
-                .replace('{{NeededForMin}}', gameDetail.minEntrants.toString())
-                .replace(
-                  '{{JoinGameEligibility}}',
-                  myEntries >= gameDetail.maxEntriesPerWallet
-                    ? 'No Entries Remain'
-                    : tokenAllowance == '0'
-                    ? 'UNIVRS Approve Required'
-                    : tokenBalance < gameDetail.entryUnivrs
-                    ? 'Not Enough UNIVRS'
-                    : 'Join Game'
-                )
-                .replace('Join Game')
-                .replace(
-                  '{{JoinGameDisabled}}',
-                  myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance < gameDetail.entryUnivrs ||
-                    tokenAllowance == '0'
-                    ? 'disabled'
-                    : ''
-                )
-                .replace('{{MyEntries}}', myEntries)
-                .replace(
-                  '{{JoinGameBtnState}}',
-                  myEntries >= gameDetail.maxEntriesPerWallet ||
-                    tokenBalance < gameDetail.entryUnivrs ||
-                    tokenAllowance == '0'
-                    ? 'secondary'
-                    : 'info'
-                )
-                .replace(
-                  '{{RunButtonVisibility}}',
-                  gameDetail.creator.toLowerCase() ==
-                    user.get('ethAddress').toLowerCase() &&
-                    gameEntries.length >= gameDetail.minEntrants
-                    ? ''
-                    : 'display:none;'
-                )
-                .replace(
-                  '{{CancelButtonVisibility}}',
-                  gameDetail.creator.toLowerCase() ==
-                    user.get('ethAddress').toLowerCase() &&
-                    gameDetail.requestedRandom == false &&
-                    gameDetail.completed == false
-                    ? ''
-                    : 'display:none;'
-                )
-                .replace('{{Prize}}', gameDetail.prize.toString())
-                .replace(
-                  '{{Winner}}',
-                  gameDetail.winner.toString() ==
-                    '0x0000000000000000000000000000000000000000'
-                    ? 'CANCELLED'
-                    : gameDetail.winner.toString().substring(1, 8) +
-                        '...' +
-                        gameDetail.creator
-                          .toString()
-                          .substring(35, gameDetail.winner.toString().length)
-                )
-              if (gameDetail.completed == true) {
-                pastGamesHTML = pastGamesHTML.replace(
-                  '{{{' + i.toString() + '}}}',
-                  html
-                )
-                document.getElementById(
-                  'completed-games-table-body'
-                ).innerHTML = pastGamesHTML
-              } else {
-                activeGamesHTML = activeGamesHTML.replace(
-                  '{{{' + i.toString() + '}}}',
-                  html
-                )
-                document.getElementById('open-games-table-body').innerHTML =
-                  activeGamesHTML
-              }
+              document.getElementById('open-games-placeholder').style.display =
+                'none'
+              document.getElementById('open-games-data').style.display = 'block'
             }
-          )
-          document.getElementById('open-games-placeholder').style.display =
-            'none'
-          document.getElementById('open-games-data').style.display = 'block'
-        })
+          }
+        }
       }
     }
   })
@@ -606,8 +641,8 @@ async function login() {
 
       localStorage.setItem('walletConnected', true)
       // await Moralis.enableWeb3()
-      console.log(user)
-      console.log(user.get('ethAddress'))
+      // console.log(user)
+      // console.log(user.get('ethAddress'))
       document.getElementById('wallet-addy').innerText =
         Moralis.User.current().get('ethAddress')
       document.getElementById('btn-connect').style.display = 'none'
@@ -617,7 +652,7 @@ async function login() {
       // CMR - document.getElementById('btn-approve').style.display = 'block'
 
       balanceCheck().then((value) => {
-        console.log('Balance' + value.toString())
+        // console.log('Balance' + value.toString())
         document.getElementById('token-balance').innerText =
           value.toString() + ' UNIVRS'
       })
@@ -680,20 +715,19 @@ if (wallet_previously_connected === 'true') {
       // })
 
       balanceCheck().then((value) => {
-        console.log('Balance' + value.toString())
+        // console.log('Balance' + value.toString())
         document.getElementById('token-balance').innerText =
           value.toString() + ' UNIVRS'
-      })
 
-      allowanceCheck().then((allowance) => {
-        if (allowance == 0) {
-          document.getElementById('approve-token-btn').style.display = 'block'
-        } else {
-          document.getElementById('approved-actions').style.display = 'block'
-        }
+        allowanceCheck().then((allowance) => {
+          if (allowance == 0) {
+            document.getElementById('approve-token-btn').style.display = 'block'
+          } else {
+            document.getElementById('approved-actions').style.display = 'block'
+          }
+          getGames()
+        })
       })
-
-      getGames()
     }
   })
 }
