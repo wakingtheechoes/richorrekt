@@ -379,18 +379,20 @@ async function getGames() {
       document.getElementById('open-games-table-body').innerHTML = ''
       document.getElementById('completed-games-table-body').innerHTML = ''
       let pastGames = 0
-      let activeGamesHTML = ''
-      let pastGamesHTML = ''
+      let activeGamesHTML = []
+      let pastGamesHTML = []
 
       /// suppppper hacky ordering. Again, this would be way better in vue or react
       let activeGamesCount = 0
       let pastGamesCount = 0
       for (let i = value.length - 1; i >= 0; i--) {
         if (value[i] < 1 && pastGames < 10) {
-          pastGamesHTML += '{{{' + i + '}}}'
+          // pastGamesHTML += '{{{' + i + '}}}'
+          pastGamesHTML.push('')
           pastGamesCount++
         } else if (value[i] > 0) {
-          activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
+          // activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
+          activeGamesHTML.push('')
           activeGamesCount++
         }
       }
@@ -593,18 +595,25 @@ async function getGames() {
                     )
                   if (gameDetail.completed == true) {
                     // console.log(pastGamesCount)
-                    pastGamesHTML = pastGamesHTML.replace(
-                      '{{{' + i.toString() + '}}}',
-                      html
-                    )
+                    pastGamesHTML[i] = html
+
                     pastGamesCount--
+                    document.getElementById(
+                      'completed-games-table-body'
+                    ).innerHTML = pastGamesHTML.join('')
+
+                    document.getElementById(
+                      'completed-games-table-body'
+                    ).style.display = 'table-row-group'
                   } else {
                     // console.log(activeGamesCount)
-                    activeGamesHTML = activeGamesHTML.replace(
-                      '{{{' + i.toString() + '}}}',
-                      html
-                    )
+                    activeGamesHTML[i] = html
                     activeGamesCount--
+
+                    document.getElementById('open-games-table-body').innerHTML =
+                      activeGamesHTML.join('')
+                    document.getElementById('open-games-data').style.display =
+                      'block'
                   }
                 })
                 .catch((error) => {
@@ -616,16 +625,8 @@ async function getGames() {
                   if (value[i].toString() == '0') {
                     // past game
                     pastGamesCount--
-                    pastGamesHTML = pastGamesHTML.replace(
-                      '{{{' + i.toString() + '}}}',
-                      ''
-                    )
                   } else {
                     activeGamesCount--
-                    activeGamesHTML = activeGamesHTML.replace(
-                      '{{{' + i.toString() + '}}}',
-                      ''
-                    )
                   }
 
                   console.log(error)
@@ -637,26 +638,24 @@ async function getGames() {
                       ' ' +
                       activeGamesCount
                   )
-                  if (pastGamesCount == 0) {
-                    document.getElementById(
-                      'completed-games-table-body'
-                    ).innerHTML = pastGamesHTML
+                  // if (pastGamesCount == 0) {
+                  //   document.getElementById(
+                  //     'completed-games-table-body'
+                  //   ).innerHTML = pastGamesHTML
 
-                    document.getElementById(
-                      'completed-games-table-body'
-                    ).style.display = 'table-row-group'
-                  }
+                  //   document.getElementById(
+                  //     'completed-games-table-body'
+                  //   ).style.display = 'table-row-group'
+                  // }
 
-                  if (activeGamesCount == 0) {
-                    document.getElementById('open-games-table-body').innerHTML =
-                      activeGamesHTML
+                  // if (activeGamesCount == 0) {
+                  //   document.getElementById('open-games-table-body').innerHTML =
+                  //     activeGamesHTML
 
-                    document.getElementById(
-                      'open-games-placeholder'
-                    ).style.display = 'none'
-                    document.getElementById('open-games-data').style.display =
-                      'block'
-                  }
+                  //   document.getElementById(
+                  //     'open-games-placeholder'
+                  //   ).style.display = 'none'
+                  // }
 
                   if (activeGamesCount == 0) {
                     document.getElementById('preloader').remove()
@@ -674,16 +673,8 @@ async function getGames() {
               if (value[i].toString() == '0') {
                 // past game
                 pastGamesCount--
-                pastGamesHTML = pastGamesHTML.replace(
-                  '{{{' + i.toString() + '}}}',
-                  ''
-                )
               } else {
                 activeGamesCount--
-                activeGamesHTML = activeGamesHTML.replace(
-                  '{{{' + i.toString() + '}}}',
-                  ''
-                )
               }
 
               console.log(error)
@@ -732,17 +723,15 @@ async function login() {
         // console.log('Balance' + value.toString())
         document.getElementById('token-balance').innerText =
           value.toString() + ' UNIVRS'
+        allowanceCheck().then((allowance) => {
+          if (allowance == 0) {
+            document.getElementById('approve-token-btn').style.display = 'block'
+          } else {
+            document.getElementById('approved-actions').style.display = 'block'
+          }
+          getGames()
+        })
       })
-
-      allowanceCheck().then((allowance) => {
-        if (allowance == 0) {
-          document.getElementById('approve-token-btn').style.display = 'block'
-        } else {
-          document.getElementById('approved-actions').style.display = 'block'
-        }
-      })
-
-      getGames()
     } catch (error) {
       console.log(error)
     }
