@@ -83,6 +83,8 @@
         <div class="col-lg-8 mx-auto text-white text-center">
           <h2 class="text-white">UNIFLIP <span class="badge badge-xs badge-primary text-xxs mx-auto">BETA</span></h2>
           <p class="lead">Put your UNIVRS on the line against other holders for big winnings.</p>
+
+          <button onclick="login();" class="btn btn-round btn-lg bg-gradient-primary mx-auto" id="btn-big-connect">Connect Wallet To See Games List</button> 
           <button onclick="approveUNIVRS();" class="btn btn-round btn-lg bg-gradient-primary mx-auto" id="approve-token-btn" style="display:none;">Click Here to Approve UNIVRS Access</button> 
           <div id="approved-actions" style="display:none;width:100%;" >
             <button onclick="createGame(100,2,2,1);" class="btn col-12 col-lg-10 btn-lg bg-gradient-primary mx-auto" id="quick-game-btn" >Start a Quick Match ( 1v1 Game, 100 UNIVRS Entry )</button> 
@@ -144,7 +146,7 @@
                         <th class="text-center text-uppercase text-secondary text-md font-weight-bolder">Winner</th>
                       </tr>
                     </thead>
-                    <tbody id="completed-games-table-body">
+                    <tbody id="completed-games-table-body" style="display:none;">
                     </tbody>
                   </table>
                 </div>
@@ -216,6 +218,83 @@
                 </div>
               </div>
             </div>
+  
+            <div class="preloader-bg" id="preloader-bg"></div>
+  <div class="preloader" id="preloader">
+    <div class="bg">
+      <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud alt bot"></div>
+      </div>
+      <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+      </div>
+      <div class="planets">
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+        <div class="planet"></div>
+      </div>
+    
+    </div>
+    
+    <div class="unicorn-container">
+      <div class="unicorn">
+        <div class="header">
+          <div class="horn">
+            <div class="lines-container"></div>
+          </div>
+          <div class="head">
+            <div class="face">
+              <div class="pink">
+              </div>
+              <div class="white"></div>
+            </div>
+            <div class="hair">
+              <div class="inner-hair"></div>
+            </div>
+          </div>
+          <div class="neck"></div>
+        </div>
+        <div class="body">
+          <div class="main"></div>
+          <div class="tail">
+            <div class="inner-tail"></div>
+          </div>
+        </div>
+        <div class="legs">
+          <div class="leg"></div>
+          <div class="leg"></div>
+          <div class="leg"></div>
+          <div class="leg"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="rainbow-container">
+      <div class="rainbow">
+      </div>
+    </div>
+  </div>
+
+  <div class="preloader-fg" id="preloader-fg">
+    <h2>Loading Data from Contract. Enjoy this lovely unicorn while you wait.</h2>
+  </div>
   <!--   Core JS Files   -->
   <script src="./assets/js/core/popper.min.js" type="text/javascript"></script>
   <script src="./assets/js/core/bootstrap.min.js" type="text/javascript"></script>

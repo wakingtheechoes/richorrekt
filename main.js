@@ -62,8 +62,12 @@ async function allowanceCheck() {
       spender: gameContractAddy,
     },
   }
+  const allowance = await Moralis.executeFunction(options).catch((error) => {
+    console.log('error checking allowance')
+    console.log(error)
+    return allowance
+  })
 
-  const allowance = await Moralis.executeFunction(options)
   tokenAllowance = allowance.toString()
   return allowance
 }
@@ -369,60 +373,66 @@ async function getGames() {
   */
 
   const nextGameID = await Moralis.executeFunction(options)
-  Moralis.executeFunction(openGamesOptions).then((value) => {
-    // console.log(value)
-    document.getElementById('open-games-table-body').innerHTML = ''
-    document.getElementById('completed-games-table-body').innerHTML = ''
-    let pastGames = 0
-    let activeGamesHTML = ''
-    let pastGamesHTML = ''
+  Moralis.executeFunction(openGamesOptions)
+    .then((value) => {
+      // console.log(value)
+      document.getElementById('open-games-table-body').innerHTML = ''
+      document.getElementById('completed-games-table-body').innerHTML = ''
+      let pastGames = 0
+      let activeGamesHTML = ''
+      let pastGamesHTML = ''
 
-    /// suppppper hacky ordering. Again, this would be way better in vue or react
-    let activeGamesCount = 0
-    let pastGamesCount = 0
-    for (let i = value.length - 1; i >= 0; i--) {
-      if (value[i] < 1 && pastGames < 10) {
-        pastGamesHTML += '{{{' + i + '}}}'
-        pastGamesCount++
-      } else if (value[i] > 0) {
-        activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
-        activeGamesCount++
+      /// suppppper hacky ordering. Again, this would be way better in vue or react
+      let activeGamesCount = 0
+      let pastGamesCount = 0
+      for (let i = value.length - 1; i >= 0; i--) {
+        if (value[i] < 1 && pastGames < 10) {
+          pastGamesHTML += '{{{' + i + '}}}'
+          pastGamesCount++
+        } else if (value[i] > 0) {
+          activeGamesHTML = '{{{' + i + '}}}' + activeGamesHTML
+          activeGamesCount++
+        }
       }
-    }
 
-    for (let i = value.length - 1; i >= 0; i--) {
-      if (value[i].toString() != '0' || pastGames < 10) {
-        let localGameDetailOptions = JSON.parse(
-          JSON.stringify(gameDetailOptions)
-        )
-        localGameDetailOptions.params['gameID'] = i + 1
-        let localGameEntriesOptions = JSON.parse(
-          JSON.stringify(gameEntriesOptions)
-        )
-        localGameEntriesOptions.params['gameID'] = i + 1
-
-        try {
-          Moralis.executeFunction(localGameDetailOptions).then((gameDetail) => {
-            // console.log(gameDetail)
-            Moralis.executeFunction(localGameEntriesOptions).then(
-              (gameEntries) => {
-                // console.log(gameEntries)
-                let currentEntriesCount = gameEntries.length
-                let myEntries = 0
-                for (let j = 0; j < currentEntriesCount; j++) {
-                  // console.log(gameEntries[j].toString())
-                  // console.log(user.get('ethAddress').toString())
-                  if (
-                    gameEntries[j].toLowerCase() ==
-                    user.get('ethAddress').toLowerCase()
-                  ) {
-                    myEntries++
+      for (let i = value.length - 1; i >= 0; i--) {
+        if (value[i].toString() != '0' || pastGames < 10) {
+          let localGameDetailOptions = JSON.parse(
+            JSON.stringify(gameDetailOptions)
+          )
+          localGameDetailOptions.params['gameID'] = i + 1
+          let localGameEntriesOptions = JSON.parse(
+            JSON.stringify(gameEntriesOptions)
+          )
+          localGameEntriesOptions.params['gameID'] = i + 1
+          Moralis.executeFunction(localGameDetailOptions)
+            .then((gameDetail) => {
+              // console.log(
+              //   'fetched gameDetail for ' +
+              //     localGameEntriesOptions.params['gameID']
+              // )
+              Moralis.executeFunction(localGameEntriesOptions)
+                .then((gameEntries) => {
+                  // console.log(
+                  //   'fetched gameEntries for ' +
+                  //     localGameEntriesOptions.params['gameID']
+                  // )
+                  let currentEntriesCount = gameEntries.length
+                  let myEntries = 0
+                  for (let j = 0; j < currentEntriesCount; j++) {
+                    // console.log(gameEntries[j].toString())
+                    // console.log(user.get('ethAddress').toString())
+                    if (
+                      gameEntries[j].toLowerCase() ==
+                      user.get('ethAddress').toLowerCase()
+                    ) {
+                      myEntries++
+                    }
                   }
-                }
-                // console.log(myEntries)
-                let html = ''
-                if (value[i].toString() == '0') {
-                  html = `<tr>
+                  // console.log(myEntries)
+                  let html = ''
+                  if (value[i].toString() == '0') {
+                    html = `<tr>
                   <td>
                     <div class="d-flex px-2 py-1">
                       <div class="d-flex flex-column justify-content-center">
@@ -441,8 +451,8 @@ async function getGames() {
                     <span class="text-secondary text-sm font-weight-bold text-dark">{{Winner}}</span>
                   </td>
                 </tr>`
-                } else {
-                  html = `<tr>
+                  } else {
+                    html = `<tr>
                   <td>
                     <div class="d-flex px-2 py-1">
                       <div class="d-flex flex-column justify-content-center">
@@ -476,121 +486,168 @@ async function getGames() {
                     <button style="{{CancelButtonVisibility}}" id="cancel-game-{{GameID}}" onclick="cancelGame({{GameID}})" class="btn col-12 btn-sm bg-gradient-danger btn-round mt-2 text-light font-weight-bold text-xs">Cancel Game</button>
                   </td>
                 </tr>`
-                }
+                  }
 
-                // console.log(tokenBalance)
-                // console.log(gameDetail.entryUnivrs)
-                // console.log(tokenBalance > gameDetail.entryUnivrs)
+                  // console.log(tokenBalance)
+                  // console.log(gameDetail.entryUnivrs)
+                  // console.log(tokenBalance > gameDetail.entryUnivrs)
 
-                html = html
-                  .replaceAll('{{GameID}}', i + 1)
-                  .replace(
-                    '{{Creator}}',
-                    gameDetail.creator.toString().substring(1, 8) +
-                      '...' +
-                      gameDetail.creator
-                        .toString()
-                        .substring(35, gameDetail.creator.toString().length)
-                  )
-                  .replace('{{EntryFee}}', gameDetail.entryUnivrs.toString())
-                  .replace(
-                    '{{EntriesRemain}}',
-                    gameDetail.maxEntrants.toString()
-                  )
-                  .replace('{{CurrentEntries}}', gameEntries.length)
-                  .replace(
-                    '{{EntriesPerWallet}}',
-                    gameDetail.maxEntriesPerWallet.toString()
-                  )
-                  .replace(
-                    '{{ReadyToRun}}',
-                    gameEntries.length >= gameDetail.minEntrants ? 'Yes' : 'No'
-                  )
-                  .replace(
-                    '{{ReadyToRunState}}',
-                    gameEntries.length >= gameDetail.minEntrants
-                      ? 'success'
-                      : 'danger'
-                  )
-                  .replace(
-                    '{{NeededForMin}}',
-                    gameDetail.minEntrants.toString()
-                  )
-                  .replace(
-                    '{{JoinGameEligibility}}',
-                    myEntries >= gameDetail.maxEntriesPerWallet
-                      ? 'No Entries Remain'
-                      : tokenAllowance == '0'
-                      ? 'UNIVRS Approve Required'
-                      : tokenBalance < gameDetail.entryUnivrs
-                      ? 'Not Enough UNIVRS'
-                      : 'Join Game'
-                  )
-                  .replace('Join Game')
-                  .replace(
-                    '{{JoinGameDisabled}}',
-                    myEntries >= gameDetail.maxEntriesPerWallet ||
-                      tokenBalance < gameDetail.entryUnivrs ||
-                      tokenAllowance == '0'
-                      ? 'disabled'
-                      : ''
-                  )
-                  .replace('{{MyEntries}}', myEntries)
-                  .replace(
-                    '{{JoinGameBtnState}}',
-                    myEntries >= gameDetail.maxEntriesPerWallet ||
-                      tokenBalance < gameDetail.entryUnivrs ||
-                      tokenAllowance == '0'
-                      ? 'secondary'
-                      : 'info'
-                  )
-                  .replace(
-                    '{{RunButtonVisibility}}',
-                    gameDetail.creator.toLowerCase() ==
-                      user.get('ethAddress').toLowerCase() &&
+                  html = html
+                    .replaceAll('{{GameID}}', i + 1)
+                    .replace(
+                      '{{Creator}}',
+                      gameDetail.creator.toString().substring(1, 8) +
+                        '...' +
+                        gameDetail.creator
+                          .toString()
+                          .substring(35, gameDetail.creator.toString().length)
+                    )
+                    .replace('{{EntryFee}}', gameDetail.entryUnivrs.toString())
+                    .replace(
+                      '{{EntriesRemain}}',
+                      gameDetail.maxEntrants.toString()
+                    )
+                    .replace('{{CurrentEntries}}', gameEntries.length)
+                    .replace(
+                      '{{EntriesPerWallet}}',
+                      gameDetail.maxEntriesPerWallet.toString()
+                    )
+                    .replace(
+                      '{{ReadyToRun}}',
                       gameEntries.length >= gameDetail.minEntrants
-                      ? ''
-                      : 'display:none;'
+                        ? 'Yes'
+                        : 'No'
+                    )
+                    .replace(
+                      '{{ReadyToRunState}}',
+                      gameEntries.length >= gameDetail.minEntrants
+                        ? 'success'
+                        : 'danger'
+                    )
+                    .replace(
+                      '{{NeededForMin}}',
+                      gameDetail.minEntrants.toString()
+                    )
+                    .replace(
+                      '{{JoinGameEligibility}}',
+                      myEntries >= gameDetail.maxEntriesPerWallet
+                        ? 'No Entries Remain'
+                        : tokenAllowance == '0'
+                        ? 'UNIVRS Approve Required'
+                        : tokenBalance.toNumber() <
+                          gameDetail.entryUnivrs.toNumber()
+                        ? 'Not Enough UNIVRS'
+                        : 'Join Game'
+                    )
+                    .replace('Join Game')
+                    .replace(
+                      '{{JoinGameDisabled}}',
+                      myEntries >= gameDetail.maxEntriesPerWallet ||
+                        tokenBalance.toNumber() <
+                          gameDetail.entryUnivrs.toNumber() ||
+                        tokenAllowance == '0'
+                        ? 'disabled'
+                        : ''
+                    )
+                    .replace('{{MyEntries}}', myEntries)
+                    .replace(
+                      '{{JoinGameBtnState}}',
+                      myEntries >= gameDetail.maxEntriesPerWallet ||
+                        tokenBalance.toNumber() <
+                          gameDetail.entryUnivrs.toNumber() ||
+                        tokenAllowance == '0'
+                        ? 'secondary'
+                        : 'info'
+                    )
+                    .replace(
+                      '{{RunButtonVisibility}}',
+                      gameDetail.creator.toLowerCase() ==
+                        user.get('ethAddress').toLowerCase() &&
+                        gameEntries.length >= gameDetail.minEntrants
+                        ? ''
+                        : 'display:none;'
+                    )
+                    .replace(
+                      '{{CancelButtonVisibility}}',
+                      gameDetail.creator.toLowerCase() ==
+                        user.get('ethAddress').toLowerCase() &&
+                        gameDetail.requestedRandom == false &&
+                        gameDetail.completed == false
+                        ? ''
+                        : 'display:none;'
+                    )
+                    .replace('{{Prize}}', gameDetail.prize.toString())
+                    .replace(
+                      '{{Winner}}',
+                      gameDetail.winner.toString() ==
+                        '0x0000000000000000000000000000000000000000'
+                        ? 'CANCELLED'
+                        : gameDetail.winner.toString().substring(1, 8) +
+                            '...' +
+                            gameDetail.creator
+                              .toString()
+                              .substring(
+                                35,
+                                gameDetail.winner.toString().length
+                              )
+                    )
+                  if (gameDetail.completed == true) {
+                    // console.log(pastGamesCount)
+                    pastGamesHTML = pastGamesHTML.replace(
+                      '{{{' + i.toString() + '}}}',
+                      html
+                    )
+                    pastGamesCount--
+                  } else {
+                    // console.log(activeGamesCount)
+                    activeGamesHTML = activeGamesHTML.replace(
+                      '{{{' + i.toString() + '}}}',
+                      html
+                    )
+                    activeGamesCount--
+                  }
+                })
+                .catch((error) => {
+                  console.log(
+                    'Caught error when requesting game entries for game id ' +
+                      localGameEntriesOptions.params['gameID']
                   )
-                  .replace(
-                    '{{CancelButtonVisibility}}',
-                    gameDetail.creator.toLowerCase() ==
-                      user.get('ethAddress').toLowerCase() &&
-                      gameDetail.requestedRandom == false &&
-                      gameDetail.completed == false
-                      ? ''
-                      : 'display:none;'
+
+                  if (value[i].toString() == '0') {
+                    // past game
+                    pastGamesCount--
+                    pastGamesHTML = pastGamesHTML.replace(
+                      '{{{' + i.toString() + '}}}',
+                      ''
+                    )
+                  } else {
+                    activeGamesCount--
+                    activeGamesHTML = activeGamesHTML.replace(
+                      '{{{' + i.toString() + '}}}',
+                      ''
+                    )
+                  }
+
+                  console.log(error)
+                })
+                .finally(() => {
+                  console.log(
+                    'finally on the promise ' +
+                      pastGamesCount +
+                      ' ' +
+                      activeGamesCount
                   )
-                  .replace('{{Prize}}', gameDetail.prize.toString())
-                  .replace(
-                    '{{Winner}}',
-                    gameDetail.winner.toString() ==
-                      '0x0000000000000000000000000000000000000000'
-                      ? 'CANCELLED'
-                      : gameDetail.winner.toString().substring(1, 8) +
-                          '...' +
-                          gameDetail.creator
-                            .toString()
-                            .substring(35, gameDetail.winner.toString().length)
-                  )
-                if (gameDetail.completed == true) {
-                  // console.log(pastGamesCount)
-                  pastGamesHTML = pastGamesHTML.replace(
-                    '{{{' + i.toString() + '}}}',
-                    html
-                  )
-                  if (--pastGamesCount == 0) {
+                  if (pastGamesCount == 0) {
                     document.getElementById(
                       'completed-games-table-body'
                     ).innerHTML = pastGamesHTML
+
+                    document.getElementById(
+                      'completed-games-table-body'
+                    ).style.display = 'table-row-group'
                   }
-                } else {
-                  // console.log(activeGamesCount)
-                  activeGamesHTML = activeGamesHTML.replace(
-                    '{{{' + i.toString() + '}}}',
-                    html
-                  )
-                  if (--activeGamesCount == 0) {
+
+                  if (activeGamesCount == 0) {
                     document.getElementById('open-games-table-body').innerHTML =
                       activeGamesHTML
 
@@ -600,29 +657,44 @@ async function getGames() {
                     document.getElementById('open-games-data').style.display =
                       'block'
                   }
-                }
-              }
-            )
-          })
-        } catch (error) {
-          if (value[i] < 1 && pastGames < 10) {
-            pastGamesHTML = pastGamesHTML.replace('{{{' + i + '}}}', '')
-            pastGamesCount--
-          } else if (value[i] > 0) {
-            activeGamesHTML = activeGamesHTML.replace('{{{' + i + '}}}', '')
-            if (--activeGamesCount == 0) {
-              document.getElementById('open-games-table-body').innerHTML =
-                activeGamesHTML
 
-              document.getElementById('open-games-placeholder').style.display =
-                'none'
-              document.getElementById('open-games-data').style.display = 'block'
-            }
-          }
+                  if (activeGamesCount == 0) {
+                    document.getElementById('preloader').remove()
+                    document.getElementById('preloader-bg').remove()
+                    document.getElementById('preloader-fg').remove()
+                  }
+                })
+            })
+            .catch((error) => {
+              console.log(
+                'Caught error when requesting game detail for game id ' +
+                  localGameEntriesOptions.params['gameID']
+              )
+
+              if (value[i].toString() == '0') {
+                // past game
+                pastGamesCount--
+                pastGamesHTML = pastGamesHTML.replace(
+                  '{{{' + i.toString() + '}}}',
+                  ''
+                )
+              } else {
+                activeGamesCount--
+                activeGamesHTML = activeGamesHTML.replace(
+                  '{{{' + i.toString() + '}}}',
+                  ''
+                )
+              }
+
+              console.log(error)
+            })
         }
       }
-    }
-  })
+    })
+    .catch((error) => {
+      console.log('Caught error in calling openGames')
+      console.log(error)
+    })
 }
 
 /* Authentication code */
@@ -639,6 +711,10 @@ async function login() {
         signingMessage: 'Authenticate',
       })
 
+      document.getElementById('preloader').style.display = 'block'
+      document.getElementById('preloader-bg').style.display = 'block'
+      document.getElementById('preloader-fg').style.display = 'block'
+
       localStorage.setItem('walletConnected', true)
       // await Moralis.enableWeb3()
       // console.log(user)
@@ -646,6 +722,7 @@ async function login() {
       document.getElementById('wallet-addy').innerText =
         Moralis.User.current().get('ethAddress')
       document.getElementById('btn-connect').style.display = 'none'
+      document.getElementById('btn-big-connect').style.display = 'none'
       document.getElementById('btn-connect-mobile').style.display = 'none'
       document.getElementById('btn-logout').style.display = 'block'
       document.getElementById('btn-logout-mobile').style.display = 'block'
@@ -677,6 +754,7 @@ async function logOut() {
 
   localStorage.removeItem('walletConnected')
   document.getElementById('btn-connect').style.display = 'block'
+  document.getElementById('btn-big-connect').style.display = 'block'
   document.getElementById('btn-connect-mobile').style.display = 'block'
   document.getElementById('btn-logout').style.display = 'none'
   document.getElementById('btn-logout-mobile').style.display = 'none'
@@ -701,7 +779,11 @@ if (wallet_previously_connected === 'true') {
     if (Moralis.User.current()) {
       document.getElementById('wallet-addy').innerText =
         Moralis.User.current().get('ethAddress')
+      document.getElementById('preloader').style.display = 'block'
+      document.getElementById('preloader-bg').style.display = 'block'
+      document.getElementById('preloader-fg').style.display = 'block'
       document.getElementById('btn-connect').style.display = 'none'
+      document.getElementById('btn-big-connect').style.display = 'none'
       document.getElementById('btn-connect-mobile').style.display = 'none'
       document.getElementById('btn-logout').style.display = 'block'
       document.getElementById('btn-logout-mobile').style.display = 'block'
