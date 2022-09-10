@@ -100,7 +100,7 @@ function GameRow(props) {
           )}
         {activeNetwork.chainId == 137 &&
           props.userAddress == gameDetail.creator &&
-          entries >= gameDetail.minEntrants && (
+          entries.length >= gameDetail.minEntrants && (
             <div>
               <button
                 id={'run-game-' + props.id}
