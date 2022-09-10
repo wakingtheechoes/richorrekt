@@ -18,8 +18,8 @@ function NavBar(props) {
         </a>
         {props.activeAddress ? (
           <span
-            className="nav-link ps-2 d-flex justify-content-between align-items-center text-dark"
-            id="token-balance-mobile"
+            id="balance-mobile"
+            className="nav-link ps-2 d-flex justify-content-between align-items-center text-dark d-lg-none d-block"
           >
             Balance: {props.tokenBalance} UNIVRS
           </span>
