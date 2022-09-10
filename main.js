@@ -702,9 +702,9 @@ async function login() {
         signingMessage: 'Authenticate',
       })
 
-      document.getElementById('preloader').style.display = 'block'
-      document.getElementById('preloader-bg').style.display = 'block'
-      document.getElementById('preloader-fg').style.display = 'block'
+      // document.getElementById('preloader').style.display = 'block'
+      // document.getElementById('preloader-bg').style.display = 'block'
+      // document.getElementById('preloader-fg').style.display = 'block'
 
       localStorage.setItem('walletConnected', true)
       // await Moralis.enableWeb3()
@@ -729,7 +729,7 @@ async function login() {
           } else {
             document.getElementById('approved-actions').style.display = 'block'
           }
-          getGames()
+          // getGames()
         })
       })
     } catch (error) {
@@ -753,10 +753,10 @@ async function logOut() {
   location.reload()
 }
 
-document.getElementById('btn-connect').onclick = login
-document.getElementById('btn-connect-mobile').onclick = login
-document.getElementById('btn-logout').onclick = logOut
-document.getElementById('btn-logout-mobile').onclick = logOut
+// document.getElementById('btn-connect').onclick = login
+// document.getElementById('btn-connect-mobile').onclick = login
+// document.getElementById('btn-logout').onclick = logOut
+// document.getElementById('btn-logout-mobile').onclick = logOut
 document.getElementById('create-custom-btn').onclick = createCustomGame
 /*
 document.getElementById('btn-approve').onclick = approveUNIVRS
@@ -768,9 +768,9 @@ if (wallet_previously_connected === 'true') {
     if (Moralis.User.current()) {
       document.getElementById('wallet-addy').innerText =
         Moralis.User.current().get('ethAddress')
-      document.getElementById('preloader').style.display = 'block'
-      document.getElementById('preloader-bg').style.display = 'block'
-      document.getElementById('preloader-fg').style.display = 'block'
+      // document.getElementById('preloader').style.display = 'block'
+      // document.getElementById('preloader-bg').style.display = 'block'
+      // document.getElementById('preloader-fg').style.display = 'block'
       document.getElementById('btn-connect').style.display = 'none'
       document.getElementById('btn-big-connect').style.display = 'none'
       document.getElementById('btn-connect-mobile').style.display = 'none'
@@ -796,7 +796,7 @@ if (wallet_previously_connected === 'true') {
           } else {
             document.getElementById('approved-actions').style.display = 'block'
           }
-          getGames()
+          // getGames()
         })
       })
     }
