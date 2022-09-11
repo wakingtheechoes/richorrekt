@@ -73,7 +73,7 @@ async function allowanceCheck() {
 }
 
 /* Check that we can read from the contract */
-async function approveUNIVRS() {
+async function approveSTEAK() {
   let options = {
     contractAddress: tokenContractAddy,
     functionName: 'approve',
@@ -138,7 +138,7 @@ async function createGame(
         inputs: [
           {
             internalType: 'uint256',
-            name: '_entryUnivrs',
+            name: '_entryFee',
             type: 'uint256',
           },
           {
@@ -169,7 +169,7 @@ async function createGame(
       },
     ],
     params: {
-      _entryUnivrs: tokenEntry,
+      _entryFee: tokenEntry,
       _minEntrants: minEntries,
       _maxEntrants: maxEntries,
       _maxEntriesPerWallet: entriesPerWallet,
@@ -308,7 +308,7 @@ async function getGames() {
             name: 'maxEntriesPerWallet',
             type: 'uint16',
           },
-          { internalType: 'uint256', name: 'entryUnivrs', type: 'uint256' },
+          { internalType: 'uint256', name: 'entryFee', type: 'uint256' },
           { internalType: 'uint256', name: 'minEntrants', type: 'uint256' },
           { internalType: 'uint256', name: 'maxEntrants', type: 'uint256' },
           { internalType: 'address', name: 'winner', type: 'address' },
@@ -464,7 +464,7 @@ async function getGames() {
                     </div>
                   </td>
                   <td>
-                    <p class="text-sm font-weight-bold text-dark mb-0">{{EntryFee}} UNIVRS</p>
+                    <p class="text-sm font-weight-bold text-dark mb-0">{{EntryFee}} STEAK</p>
                   </td>
                   <td>
                     <p class="text-sm text-dark mb-0 text-center">{{CurrentEntries}} / {{EntriesRemain}}</p>
@@ -491,8 +491,8 @@ async function getGames() {
                   }
 
                   // console.log(tokenBalance)
-                  // console.log(gameDetail.entryUnivrs)
-                  // console.log(tokenBalance > gameDetail.entryUnivrs)
+                  // console.log(gameDetail.entryFee)
+                  // console.log(tokenBalance > gameDetail.entryFee)
 
                   html = html
                     .replaceAll('{{GameID}}', i + 1)
@@ -504,7 +504,7 @@ async function getGames() {
                           .toString()
                           .substring(35, gameDetail.creator.toString().length)
                     )
-                    .replace('{{EntryFee}}', gameDetail.entryUnivrs.toString())
+                    .replace('{{EntryFee}}', gameDetail.entryFee.toString())
                     .replace(
                       '{{EntriesRemain}}',
                       gameDetail.maxEntrants.toString()
@@ -535,10 +535,10 @@ async function getGames() {
                       myEntries >= gameDetail.maxEntriesPerWallet
                         ? 'No Entries Remain'
                         : tokenAllowance == '0'
-                        ? 'UNIVRS Approve Required'
+                        ? 'STEAK Approve Required'
                         : tokenBalance.toNumber() <
-                          gameDetail.entryUnivrs.toNumber()
-                        ? 'Not Enough UNIVRS'
+                          gameDetail.entryFee.toNumber()
+                        ? 'Not Enough STEAK'
                         : 'Join Game'
                     )
                     .replace('Join Game')
@@ -546,7 +546,7 @@ async function getGames() {
                       '{{JoinGameDisabled}}',
                       myEntries >= gameDetail.maxEntriesPerWallet ||
                         tokenBalance.toNumber() <
-                          gameDetail.entryUnivrs.toNumber() ||
+                          gameDetail.entryFee.toNumber() ||
                         tokenAllowance == '0'
                         ? 'disabled'
                         : ''
@@ -556,7 +556,7 @@ async function getGames() {
                       '{{JoinGameBtnState}}',
                       myEntries >= gameDetail.maxEntriesPerWallet ||
                         tokenBalance.toNumber() <
-                          gameDetail.entryUnivrs.toNumber() ||
+                          gameDetail.entryFee.toNumber() ||
                         tokenAllowance == '0'
                         ? 'secondary'
                         : 'info'
@@ -759,7 +759,7 @@ async function logOut() {
 // document.getElementById('btn-logout-mobile').onclick = logOut
 document.getElementById('create-custom-btn').onclick = createCustomGame
 /*
-document.getElementById('btn-approve').onclick = approveUNIVRS
+document.getElementById('btn-approve').onclick = approveSTEAK
 */
 
 const wallet_previously_connected = localStorage.getItem('walletConnected')

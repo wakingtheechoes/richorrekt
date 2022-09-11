@@ -14,14 +14,15 @@ function NavBar(props) {
           data-placement="bottom"
           target="_blank"
         >
-          UniFlip <span className="badge badge-xs badge-primary">BETA</span>
+          RichOrRekt Game{' '}
+          <span className="badge badge-xs badge-primary">BETA</span>
         </a>
         {props.activeAddress ? (
           <span
             id="balance-mobile"
             className="nav-link ps-2 d-flex justify-content-between align-items-center text-dark d-lg-none d-block"
           >
-            Balance: {props.tokenBalance} UNIVRS
+            Balance: {props.tokenBalance} STEAK
           </span>
         ) : (
           <span id="btn-connect-mobile">
@@ -66,7 +67,7 @@ function NavBar(props) {
                   className="nav-link ps-2 d-flex justify-content-between align-items-center text-dark"
                   id="token-balance"
                 >
-                  Balance: {props.tokenBalance} UNIVRS
+                  Balance: {props.tokenBalance} STEAK
                 </span>
               ) : (
                 <button

@@ -4,7 +4,7 @@ const { useState, useEffect } = React
 function GameRow(props) {
   const [gameDetail, setGameDetail] = useState({
     creator: '',
-    entryUnivrs: 0,
+    entryFee: 0,
     completed: false,
     isPublic: false,
     maxEntrants: 0,
@@ -57,8 +57,10 @@ function GameRow(props) {
       </td>
       <td>
         <p className="text-sm font-weight-bold text-dark mb-0">
-          {gameDetail.entryUnivrs ? gameDetail.entryUnivrs.toNumber() : ''}{' '}
-          UNIVRS
+          {gameDetail.entryFee
+            ? ethers.utils.formatUnits(gameDetail.entryFee, 18)
+            : ''}{' '}
+          STEAK
         </p>
       </td>
       <td>

@@ -2,10 +2,11 @@
 
 const ALCHEMY_RPC_URL =
   'https://polygon-mainnet.g.alchemy.com/v2/jI66Ll05xpLRz-TJR7tVW56Q3NRQDrXx'
-const GAME_CONTRACT_ADDRESS = '0x3EcB3c08a30E924B92bc0288Aa7a59cF10B9aaDF'
-const TOKEN_CONTRACT_ADDRESS = '0x337617f19b496cba235f3611e0a69aa94de6c400'
+const GAME_CONTRACT_ADDRESS = '0x432BDE9573420094232d5477D5c1F911d801DDE2'
+const TOKEN_CONTRACT_ADDRESS = '0x9d4314EFe6DaE51C1543Bab8f1E861F9800f6802'
 
 const TOKEN_CONTRACT_ABI = [
+  { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     anonymous: false,
     inputs: [
@@ -24,11 +25,30 @@ const TOKEN_CONTRACT_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'value',
+        name: 'amount',
         type: 'uint256',
       },
     ],
     name: 'Approval',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferred',
     type: 'event',
   },
   {
@@ -39,7 +59,7 @@ const TOKEN_CONTRACT_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'value',
+        name: 'amount',
         type: 'uint256',
       },
     ],
@@ -47,9 +67,16 @@ const TOKEN_CONTRACT_ABI = [
     type: 'event',
   },
   {
+    inputs: [],
+    name: 'DOMAIN_SEPARATOR',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
-      { internalType: 'address', name: 'owner', type: 'address' },
-      { internalType: 'address', name: 'spender', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
     ],
     name: 'allowance',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
@@ -67,7 +94,7 @@ const TOKEN_CONTRACT_ABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+    inputs: [{ internalType: 'address', name: '', type: 'address' }],
     name: 'balanceOf',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
@@ -75,19 +102,22 @@ const TOKEN_CONTRACT_ABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
-      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { internalType: 'uint256[]', name: 'amounts', type: 'uint256[]' },
+      { internalType: 'address[]', name: 'to', type: 'address[]' },
     ],
-    name: 'burn',
+    name: 'bulkMint',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'connectedToken',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
+    inputs: [
+      { internalType: 'address', name: 'from', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+    ],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -98,53 +128,27 @@ const TOKEN_CONTRACT_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: 'spender', type: 'address' },
-      { internalType: 'uint256', name: 'subtractedValue', type: 'uint256' },
-    ],
-    name: 'decreaseAllowance',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'fxManager',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [{ internalType: 'address', name: 'user', type: 'address' }],
+    name: 'getMintAllowance',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: 'spender', type: 'address' },
-      { internalType: 'uint256', name: 'addedValue', type: 'uint256' },
-    ],
-    name: 'increaseAllowance',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'fxManager_', type: 'address' },
-      { internalType: 'address', name: 'connectedToken_', type: 'address' },
-      { internalType: 'string', name: 'name_', type: 'string' },
-      { internalType: 'string', name: 'symbol_', type: 'string' },
-      { internalType: 'uint8', name: 'decimals_', type: 'uint8' },
-    ],
-    name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
       { internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { internalType: 'address', name: 'to', type: 'address' },
     ],
     name: 'mint',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'mintingPaused',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -155,12 +159,44 @@ const TOKEN_CONTRACT_ABI = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: 'nonces',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
-      { internalType: 'string', name: '_name', type: 'string' },
-      { internalType: 'string', name: '_symbol', type: 'string' },
-      { internalType: 'uint8', name: '_decimals', type: 'uint8' },
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'spender', type: 'address' },
+      { internalType: 'uint256', name: 'value', type: 'uint256' },
+      { internalType: 'uint256', name: 'deadline', type: 'uint256' },
+      { internalType: 'uint8', name: 'v', type: 'uint8' },
+      { internalType: 'bytes32', name: 'r', type: 'bytes32' },
+      { internalType: 'bytes32', name: 's', type: 'bytes32' },
     ],
-    name: 'setupMetaData',
+    name: 'permit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'bool', name: 'paused', type: 'bool' }],
+    name: 'setMintingPaused',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -181,7 +217,7 @@ const TOKEN_CONTRACT_ABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'address', name: 'to', type: 'address' },
       { internalType: 'uint256', name: 'amount', type: 'uint256' },
     ],
     name: 'transfer',
@@ -191,12 +227,29 @@ const TOKEN_CONTRACT_ABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'sender', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'address', name: 'from', type: 'address' },
+      { internalType: 'address', name: 'to', type: 'address' },
       { internalType: 'uint256', name: 'amount', type: 'uint256' },
     ],
     name: 'transferFrom',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+    ],
+    name: 'updateMintAllowance',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -240,7 +293,7 @@ const GAME_CONTRACT_ABI = [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: '_entryUnivrs', type: 'uint256' },
+      { internalType: 'uint256', name: '_entryFee', type: 'uint256' },
       { internalType: 'uint256', name: '_minEntrants', type: 'uint256' },
       { internalType: 'uint256', name: '_maxEntrants', type: 'uint256' },
       { internalType: 'uint16', name: '_maxEntriesPerWallet', type: 'uint16' },
@@ -258,7 +311,7 @@ const GAME_CONTRACT_ABI = [
       { internalType: 'address', name: 'creator', type: 'address' },
       { internalType: 'bool', name: 'isPublic', type: 'bool' },
       { internalType: 'uint16', name: 'maxEntriesPerWallet', type: 'uint16' },
-      { internalType: 'uint256', name: 'entryUnivrs', type: 'uint256' },
+      { internalType: 'uint256', name: 'entryFee', type: 'uint256' },
       { internalType: 'uint256', name: 'minEntrants', type: 'uint256' },
       { internalType: 'uint256', name: 'maxEntrants', type: 'uint256' },
       { internalType: 'address', name: 'winner', type: 'address' },
@@ -268,6 +321,16 @@ const GAME_CONTRACT_ABI = [
       { internalType: 'uint256', name: 'randomRequestID', type: 'uint256' },
       { internalType: 'uint256', name: 'randomWordReturned', type: 'uint256' },
       { internalType: 'string', name: 'gameAlias', type: 'string' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    name: 'gamesMetaMapping',
+    outputs: [
+      { internalType: 'uint256', name: 'timeCreated', type: 'uint256' },
+      { internalType: 'uint256', name: 'timeRan', type: 'uint256' },
     ],
     stateMutability: 'view',
     type: 'function',

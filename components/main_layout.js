@@ -7,7 +7,7 @@ function MainAppLayout(props) {
   useEffect(() => {
     if (props.activeAddress) {
       TOKEN_READ_CONTRACT.balanceOf(props.activeAddress).then((balance) => {
-        setTokenBalance(balance.toNumber())
+        setTokenBalance(ethers.utils.formatUnits(balance, 18))
       })
 
       // console.log('allowance1', tokenAllowance)
@@ -15,8 +15,8 @@ function MainAppLayout(props) {
         props.activeAddress,
         GAME_CONTRACT_ADDRESS
       ).then((allowance) => {
-        let allow = parseInt(allowance._hex, 16)
-        setTokenAllowance(allow)
+        // let allow = parseInt(allowance._hex, 16)
+        setTokenAllowance(parseInt(ethers.utils.formatUnits(allowance, 18)))
         //   console.log(typeof allow, allow)
       })
     }

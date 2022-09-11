@@ -19,7 +19,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="./assets/img/favicon.png">
   <title>
-    Uniflip. Looking for more official name.
+    Rich Or Rekt - The Game.
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700,200|Open+Sans+Condensed:700" rel="stylesheet">
@@ -34,13 +34,13 @@
   <link href="./assets/css/custom.css" rel="stylesheet" />
 </head>
 
-<body class="presentation-page bg-dark">
+<body class="presentation-page bg-dads">
   <!-- Navbar -->
   <!-- End Navbar -->
 <header>
   <div id="react-app-main-layout"></div>
 </header>
-  <footer class="footer pt-5 mt-5 text-white">
+  <footer class="footer pt-5 mt-5 text-white bg-gra y-900">
     <hr class="horizontal dark mb-5">
     <div class="container">
       <div class=" row">
@@ -70,7 +70,7 @@
                       </div>
                       <div class="card-body pb-3">
                         <form role="form text-left">
-                          <label>UNIVRS Entry Fee</label>
+                          <label>STEAK Entry Fee</label>
                           <div class="input-group mb-3">
                             <input id="entry-input" type="number" class="form-control" placeholder="Must be greater than 25" aria-label="Entry Fee" aria-describedby="entry-fee-addon">
                           </div>
@@ -103,84 +103,6 @@
               </div>
             </div>
   
-            <div class="preloader-bg" id="preloader-bg" style="display:none"></div>
-  <div class="preloader" id="preloader" style="display:none">
-    <div class="bg">
-      <div class="clouds">
-        <div class="cloud"></div>
-        <div class="cloud alt bot"></div>
-      </div>
-      <div class="stars">
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-      </div>
-      <div class="planets">
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-        <div class="planet"></div>
-      </div>
-    
-    </div>
-    
-    <div class="unicorn-container" style="display:none">
-      <div class="unicorn">
-        <div class="header">
-          <div class="horn">
-            <div class="lines-container"></div>
-          </div>
-          <div class="head">
-            <div class="face">
-              <div class="pink">
-              </div>
-              <div class="white"></div>
-            </div>
-            <div class="hair">
-              <div class="inner-hair"></div>
-            </div>
-          </div>
-          <div class="neck"></div>
-        </div>
-        <div class="body">
-          <div class="main"></div>
-          <div class="tail">
-            <div class="inner-tail"></div>
-          </div>
-        </div>
-        <div class="legs">
-          <div class="leg"></div>
-          <div class="leg"></div>
-          <div class="leg"></div>
-          <div class="leg"></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="rainbow-container" style="display:none">
-      <div class="rainbow">
-      </div>
-    </div>
-  </div>
-
-  <div class="preloader-fg" id="preloader-fg" style="display:none">
-    <h2>Loading Data from Contract. Enjoy this lovely unicorn while you wait.</h2>
-    <br/>
-    <h2 class="mt-7">If this never completes, double check that you are on polygon network.</h2>
-  </div>
   <!--   Core JS Files   -->
   <script src="./assets/js/core/popper.min.js" type="text/javascript"></script>
   <script src="./assets/js/core/bootstrap.min.js" type="text/javascript"></script>
@@ -286,7 +208,7 @@
     let customGameCreateBtn = document.getElementById('create-custom-btn');
     customGameCreateBtn.onclick = () => {
       GAME_READ_WRITE_CONTRACT.createGame(
-        document.getElementById('entry-input').value,
+        document.getElementById('entry-input').value + "000000000000000000", // turn this into the proper decimals
         document.getElementById('min-input').value,
         document.getElementById('max-input').value,
         document.getElementById('entries-wallet-input').value,
